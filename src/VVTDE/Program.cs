@@ -4,17 +4,16 @@ using System.Net;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Routing;
 
+var builder = WebApplication.CreateBuilder(args);
 
-var builder = WebApplication.CreateBuilder(args);   
-
-builder.Services.AddControllers();
-builder.Services.AddMvc();
-builder.Services.AddMvcCore();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-app.MapControllers();
-app.MapGet("/routes", (IEnumerable<EndpointDataSource> endpointSources) =>
-    string.Join("\n", endpointSources.SelectMany(source => source.Endpoints)));
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute();
+});
 
 app.Run();
