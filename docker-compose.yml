@@ -1,0 +1,16 @@
+﻿
+version: '3.8'
+
+services:
+  vvtde:
+    build:
+      context: .
+    image: flexlug/vvtde:latest
+    restart: always
+    #labels:
+      #traefik.enable: true
+      #traefik.http.routers.vvtde-http.entrypoints: web
+      #traefik.http.routers.vvtde-http.rule: (Host(`flexlug.ru`) && PathPrefix(`/apis/vvtde`))
+      #traefik.http.routers.vvtde.rule: Host(`flexlug.ru`) && PathPrefix(`/apis/vvtde`)
+      #traefik.http.routers.vvtde.entrypoints: websecure
+      #traefik.http.routers.vvtde.tls: true
