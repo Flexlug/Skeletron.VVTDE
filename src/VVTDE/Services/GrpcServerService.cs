@@ -2,18 +2,19 @@
 using Grpc.Core;
 using Skeletron;
 using VVTDE.Domain;
+using VVTDE.Services.Interfaces;
 
 namespace VVTDE.Services;
 
 public class GrpcServerService : VVTDEBridge.VVTDEBridgeBase
 {
     private readonly ILogger<GrpcServerService> _logger;
-    private readonly VideoStorageService _storage;
-    private readonly VideoDownloadService _downloader;
+    private readonly IVideoStorageService _storage;
+    private readonly IVideoDownloadService _downloader;
 
     public GrpcServerService(ILogger<GrpcServerService> logger,
-        VideoStorageService storage,
-        VideoDownloadService downloader)
+        IVideoStorageService storage,
+        IVideoDownloadService downloader)
     {
         _logger = logger;
         _storage = storage;
@@ -37,10 +38,10 @@ public class GrpcServerService : VVTDEBridge.VVTDEBridgeBase
         
         // Если видео было найдено в базе, то будет возвращен экземпляр видео из БД с его собственным GUID
         // Если видео не было найдено в базе, то будет возвращен тот же экземпляр с тем же GUID
-        if (video.Guid != newVideo.Guid)
+        if (video.Guid == newVideo.Guid)
         {
             _logger.LogInformation($"Requested video download. Guid: {video.Guid}");
-            await _downloader.DownloadVideo(video);
+            _downloader.Download(video);
             return new()
             {
                 Guid = video.Guid.ToString(),
@@ -63,14 +64,14 @@ public class GrpcServerService : VVTDEBridge.VVTDEBridgeBase
             _logger.LogInformation($"Fetched video is still in download a queue. {request.Guid}");
             return new()
             {
-                DownloadComplete = true
+                DownloadComplete = false
             };            
         }
         
         _logger.LogInformation($"Fetched video is not in download a queue. {request.Guid}");
         return new()
         {
-            DownloadComplete = false
+            DownloadComplete = true
         };
     }
 }

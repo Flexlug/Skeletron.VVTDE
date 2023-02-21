@@ -4,12 +4,14 @@ using VVTDE.Persistence.EntityTypeConfiguration;
 
 namespace VVTDE.Persistence;
 
-public class VideoDbContext : DbContext
+public class VideoDbContext : DbContext, IVideoDbContext
 {
     public DbSet<Video> Videos { get; set; }
 
     public VideoDbContext(DbContextOptions<VideoDbContext> options)
-        : base(options) { }
+        : base(options)
+    {
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

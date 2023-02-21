@@ -1,26 +1,38 @@
-﻿using Cysharp.Diagnostics;
+﻿using System.Collections.Concurrent;
+using Cysharp.Diagnostics;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using VVTDE.Domain;
 using VVTDE.Persistence;
+using VVTDE.Services.Interfaces;
 
 namespace VVTDE.Services;
 
-public class VideoDownloadService
+public class VideoDownloadService : IVideoDownloadService
 {
     private readonly string _downloadPath;
     private readonly string _ytDlpPath;
-    private readonly VideoStorageService _storage;
+    private readonly IVideoStorageService _storage;
     private readonly ILogger<VideoDownloadService> _logger;
     
-    private readonly List<Guid> _downloadQueue = new();
+    // В .NET нет ConcurrentList
+    private readonly ConcurrentDictionary<Guid, Guid> _downloadQueue = new();
 
-    public VideoDownloadService(VideoStorageService storage, 
+    public event EventHandler<Video> OnVideoDownload;
+
+    public VideoDownloadService(IVideoStorageService storage, 
         IConfiguration configuration, 
         ILogger<VideoDownloadService> logger)
     {
         _storage = storage;
         _logger = logger;
-        _downloadPath = configuration["VideoDownloadPath"] ?? throw new NullReferenceException("Video download path is not specified in appsettings.json");
-        _ytDlpPath = configuration["YtDlpPath"] ?? throw new NullReferenceException("Yt-dlp path is not specified in appsettings.json");
+        _downloadPath = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            configuration["VideoDownloadPath"] ??
+                throw new NullReferenceException("Video download path is not specified in appsettings.json"));
+        _ytDlpPath = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            configuration["YtDlpPath"] ??
+            throw new NullReferenceException("Yt-dlp path is not specified in appsettings.json"));
 
         if (!File.Exists(_ytDlpPath))
         {
@@ -31,24 +43,31 @@ public class VideoDownloadService
     }
 
     public async Task<bool> IsDownloading(Guid guid) =>
-        _downloadQueue.Contains(guid);
+        _downloadQueue.TryGetValue(guid, out _);
 
-    public async Task DownloadVideo(Video video)
+    public void Download(Video video)
     {
-        _downloadQueue.Add(video.Guid);
-        var filename = await ProcessX.StartAsync($"yt-dlp --quiet --no-simulate --no-warnings --print filename {video.Url} -P {_downloadPath}")
-            .FirstOrDefaultAsync();
+        Task.Factory.StartNew(async () => DownloadWorker(video));
+    }
+
+    private async Task DownloadWorker(Video video)
+    {
+        _downloadQueue.TryAdd(video.Guid, video.Guid);
+        var output = await ProcessX.StartAsync($"yt-dlp --quiet --no-simulate --no-warnings --print filename {video.Url} -P {_downloadPath} -o \"{video.Guid}.mp4\"")
+            .ToTask();
+
+        var filename = output.FirstOrDefault();
 
         if (string.IsNullOrEmpty(filename))
         {
             _logger.LogWarning("Couldn't download video. Output video filename is null or empty");
-            _downloadQueue.Remove(video.Guid);
+            _downloadQueue.Remove(video.Guid, out _);
             return;
         }
         
         _logger.LogInformation("Download complete. Filename: {Filename}", filename);
 
-        _downloadQueue.Remove(video.Guid);
+        _downloadQueue.Remove(video.Guid, out _);
         await _storage.AddVideo(video);
     }
 }

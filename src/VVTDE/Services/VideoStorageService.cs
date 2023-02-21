@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VVTDE.Domain;
 using VVTDE.Persistence;
+using VVTDE.Services.Interfaces;
 
 namespace VVTDE.Services;
 
-public class VideoStorageService
+public class VideoStorageService : IVideoStorageService
 {
-    private readonly VideoDbContext _context;
+    private readonly IVideoDbContext _context;
     private readonly ILogger<VideoStorageService> _logger;
 
-    public VideoStorageService(VideoDbContext context,
+    public VideoStorageService(IVideoDbContext context,
         ILogger<VideoStorageService> logger)
     {
         _context = context;

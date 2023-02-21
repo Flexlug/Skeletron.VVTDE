@@ -1,19 +1,34 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Routing;
+using System.Runtime.InteropServices.JavaScript;
+using VVTDE.Persistence;
+using VVTDE.Services;
+using VVTDE.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(); // добавляем сервисы MVC
+builder.Services.AddOptions();
+builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddSingleton<IVideoStorageService, VideoStorageService>();
+builder.Services.AddSingleton<IVideoDownloadService, VideoDownloadService>();
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 
-app.UseRouting();
-app.UseEndpoints(endpoints =>
+using (var scope = app.Services.CreateScope())
 {
-    endpoints.MapDefaultControllerRoute();
-});
+    var serviceProvider = scope.ServiceProvider;
+    var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+    var context = serviceProvider.GetRequiredService<VideoDbContext>();
+    DbInitializer.Initialize(context);
+
+    logger.LogInformation("Db initialized");
+}
+
+app.MapGrpcService<GrpcServerService>(); 
+
+// устанавливаем сопоставление маршрутов с контроллерами
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Video}/{action=Watch}/{id?}");
 
 app.Run();
