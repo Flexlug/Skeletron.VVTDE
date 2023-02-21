@@ -13,7 +13,6 @@ RUN dotnet build "VVTDE.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "VVTDE.csproj" -c Release -o /app/publish
-
 RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -P /app/publish
 
 FROM base AS final
