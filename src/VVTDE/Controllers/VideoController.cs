@@ -33,7 +33,7 @@ namespace VVTDE.Controllers
 
             if (video is null)
             {
-                _logger.LogWarning($"Requested video couldn't be found. Guid: {video.Guid}");
+                _logger.LogWarning($"Requested video couldn't be found. Guid: {guid}");
                 return NotFound();
             }
             
