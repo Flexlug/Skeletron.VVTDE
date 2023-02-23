@@ -19,7 +19,5 @@
     <ItemGroup>
         <PackageReference Include="ProcessX" Version="1.5.5" />
         <ProjectReference Include="..\VVTDE.Persistence\VVTDE.Persistence.csproj" />
-        <PackageReference Include="Grpc.AspNetCore" Version="2.51.0" />
-        <Protobuf Include="Protos/vvtde.proto" GrpcServices="Server" />
     </ItemGroup>
 </Project>

@@ -10,7 +10,6 @@ builder.Services.AddOptions();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddSingleton<IVideoStorageService, VideoStorageService>();
 builder.Services.AddSingleton<IVideoDownloadService, VideoDownloadService>();
-builder.Services.AddGrpc();
 
 var app = builder.Build();
 
@@ -23,8 +22,6 @@ using (var scope = app.Services.CreateScope())
 
     logger.LogInformation("Db initialized");
 }
-
-app.MapGrpcService<GrpcServerService>(); 
 
 // устанавливаем сопоставление маршрутов с контроллерами
 app.MapControllerRoute(
