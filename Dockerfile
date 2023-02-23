@@ -14,6 +14,7 @@ RUN dotnet build "VVTDE.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "VVTDE.csproj" -c Release -o /app/publish
 RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -P /app/publish
+RUN chmod +x /app/publish/yt-dlp_linux
 
 FROM base AS final
 WORKDIR /app
