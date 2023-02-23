@@ -55,7 +55,8 @@ namespace VVTDE.Controllers
         {
             if (!validateRequest(Request))
             {
-                return Forbid();
+                // Can not return Forbid() because this method requires authentication configured
+                return StatusCode(403);
             }
             
             var newVideo = new Video()
@@ -96,7 +97,8 @@ namespace VVTDE.Controllers
         {
             if (!validateRequest(Request))
             {
-                return Forbid();
+                // Can not return Forbid() because this method requires authentication configured
+                return StatusCode(403);
             }
             
             if (await _downloader.IsDownloading(request.Guid))
