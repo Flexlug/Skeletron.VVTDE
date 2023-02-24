@@ -55,7 +55,7 @@ namespace VVTDE.Controllers
         {
             // Cut .mp4 extension
             // We need to include it in url because of discord
-            var parsedGuid = Guid.Parse(guid.Substring(0, guid.Length - 5));
+            var parsedGuid = Guid.Parse(guid.Substring(0, guid.Length - 4));
             
             if (!_downloader.TryGetVideoPath(parsedGuid, out var path))
             {
