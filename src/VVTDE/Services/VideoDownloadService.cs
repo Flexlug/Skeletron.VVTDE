@@ -69,6 +69,6 @@ public class VideoDownloadService : IVideoDownloadService
         _logger.LogInformation("Download complete. Filename: {Filename}", filename);
 
         _downloadQueue.Remove(video.Guid, out _);
-        await _storage.AddVideo(video);
+        _storage.AddVideo(video);
     }
 }

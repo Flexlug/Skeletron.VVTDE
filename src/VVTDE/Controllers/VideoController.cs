@@ -38,7 +38,7 @@ namespace VVTDE.Controllers
                 return BadRequest("Please, specify guid");
             }
             
-            var video = await _storage.GetVideo(guid);
+            var video = _storage.GetVideo(guid);
 
             if (video is null)
             {
@@ -59,7 +59,7 @@ namespace VVTDE.Controllers
                 return StatusCode(403);
             }
 
-            var videoGuid = await _storage.CheckVideoExists(request.Url);
+            var videoGuid = _storage.CheckVideoExists(request.Url);
 
             if (videoGuid != Guid.Empty)
             {
@@ -80,7 +80,7 @@ namespace VVTDE.Controllers
                 ImageUrl = request.ImageUrl
             };
 
-            var video = await _storage.AddVideo(newVideo);
+            var video = _storage.AddVideo(newVideo);
             
             _logger.LogInformation($"Requested video download. Guid: {video.Guid}");
             _downloader.Download(video);
