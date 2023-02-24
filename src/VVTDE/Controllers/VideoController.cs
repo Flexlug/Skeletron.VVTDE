@@ -51,8 +51,12 @@ namespace VVTDE.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Watch(Guid guid)
+        public async Task<IActionResult> Watch(string strGuid)
         {
+            // Cut .mp4 extension
+            // We need to include it in url because of discord
+            var guid = Guid.Parse(strGuid.Substring(0, strGuid.Length - 4));
+            
             if (!_downloader.TryGetVideoPath(guid, out var path))
             {
                 return NotFound();
