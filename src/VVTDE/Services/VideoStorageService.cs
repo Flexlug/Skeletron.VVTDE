@@ -22,6 +22,10 @@ public class VideoStorageService : IVideoStorageService
     public async Task<Video> AddVideo(Video video)
     {
         await _context.Videos.AddAsync(video);
+
+        // Fix "EF Core SQLITE - SQLite Error 19: 'UNIQUE constraint failed"
+        _context.Videos.Attach(video);
+        
         await _context.SaveChangesAsync();
         
         _logger.LogInformation($"Video added. Guid: {video.Guid}");
