@@ -6,5 +6,5 @@ namespace VVTDE.Persistence;
 public interface IVideoDbContext
 {
     DbSet<Video> Videos { get; set; }
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+    int SaveChanges();
 }
