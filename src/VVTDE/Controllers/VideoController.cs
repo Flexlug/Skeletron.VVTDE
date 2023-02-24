@@ -47,7 +47,7 @@ namespace VVTDE.Controllers
             }
             
             _logger.LogInformation($"Requested video found. Guid: {video.Guid}");
-            return View(video);
+            return View(video); 
         }
 
         [HttpGet]
