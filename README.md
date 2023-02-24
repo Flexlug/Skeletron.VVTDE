@@ -26,9 +26,7 @@
 ```json
 {
     "Guid": "Сгенерированный GUID для видео",
-  
-    // Имеется ли уже видео в наличии
-    "AlreadyDownloaded": false 
+    "AlreadyDownloaded": false // Имеется ли уже видео в наличии
 }
 ```
 - `Video/FetchVideo` - проверить, завершилась ли закачка видео. Требует токен. Требует JSON:
@@ -40,8 +38,7 @@
 Ответ:
 ```json
 {
-    // Завершена ли закачка видео
-    "DownloadComplete": false 
+    "DownloadComplete": false // Завершена ли закачка видео 
 }
 ```
 
