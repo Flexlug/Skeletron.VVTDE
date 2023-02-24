@@ -58,7 +58,19 @@ namespace VVTDE.Controllers
                 // Can not return Forbid() because this method requires authentication configured
                 return StatusCode(403);
             }
-            
+
+            var videoGuid = await _storage.CheckVideoExists(request.Url);
+
+            if (videoGuid != Guid.Empty)
+            {
+                _logger.LogInformation($"Requested video download, but it already exists. Guid: {videoGuid}");
+                return Ok(new VideoResponse()
+                {
+                    Guid = videoGuid,
+                    AlreadyDownloaded = false
+                });
+            }
+
             var newVideo = new Video()
             {
                 Guid = Guid.NewGuid(),
@@ -69,23 +81,11 @@ namespace VVTDE.Controllers
             };
 
             var video = await _storage.AddVideo(newVideo);
-        
-            // Если видео было найдено в базе, то будет возвращен экземпляр видео из БД с его собственным GUID
-            // Если видео не было найдено в базе, то будет возвращен тот же экземпляр с тем же GUID
-            if (video.Guid == newVideo.Guid)
-            {
-                _logger.LogInformation($"Requested video download. Guid: {video.Guid}");
-                _downloader.Download(video);
-                
-                return Created(@$"https://vvtde.flexlug.ru/Video/Watch?guid={video.Guid}", new VideoResponse()
-                {
-                    Guid = video.Guid,
-                    AlreadyDownloaded = false
-                });            
-            }
-        
-            _logger.LogInformation($"Requested video download, but it already exists. Guid: {video.Guid}");
-            return Ok(new VideoResponse()
+            
+            _logger.LogInformation($"Requested video download. Guid: {video.Guid}");
+            _downloader.Download(video);
+
+            return Created(@$"https://vvtde.flexlug.ru/Video/Watch?guid={video.Guid}", new VideoResponse()
             {
                 Guid = video.Guid,
                 AlreadyDownloaded = false

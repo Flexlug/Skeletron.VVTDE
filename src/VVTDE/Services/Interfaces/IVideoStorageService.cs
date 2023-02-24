@@ -6,4 +6,5 @@ public interface IVideoStorageService
 {
     Task<Video> AddVideo(Video video);
     Task<Video> GetVideo(Guid guid);
+    Task<Guid> CheckVideoExists(string url);
 }

@@ -37,4 +37,15 @@ public class VideoStorageService : IVideoStorageService
     
     public async Task<Video> GetVideo(Guid guid)
         => await _context.Videos.FirstOrDefaultAsync(v => v.Guid == guid);
+
+    public async Task<Guid> CheckVideoExists(string url)
+    {
+        var video = await _context.Videos.FirstOrDefaultAsync(v => v.Url == url);
+        if (video is null)
+        {
+            return Guid.Empty;
+        }
+
+        return video.Guid;
+    }
 }
