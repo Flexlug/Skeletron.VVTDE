@@ -1,5 +1,4 @@
-﻿
-version: '3.8'
+﻿version: '3.8'
 
 services:
   vvtde:
@@ -7,10 +6,19 @@ services:
       context: .
     image: flexlug/vvtde:latest
     restart: always
-    #labels:
-      #traefik.enable: true
-      #traefik.http.routers.vvtde-http.entrypoints: web
-      #traefik.http.routers.vvtde-http.rule: (Host(`flexlug.ru`) && PathPrefix(`/apis/vvtde`))
-      #traefik.http.routers.vvtde.rule: Host(`flexlug.ru`) && PathPrefix(`/apis/vvtde`)
-      #traefik.http.routers.vvtde.entrypoints: websecure
-      #traefik.http.routers.vvtde.tls: true
+    environment:
+      # URI для подключения к БД
+      "DbConnection": "Data Source=videos.db"
+      # Директория, где хранится БД
+      "DbFoler": "db"
+      # Название исполняемого файла yt-dlp
+      "YtDlpPath": "yt-dlp_linux"
+      # Директория, в которой будут сохранаться видео
+      "VideoDownloadPath": "static"
+      # Токен, необходимый для доступа к Endpoint-ам FetchVideo и RequestDownload
+      "Token": "SecretToken"
+    volumes:
+      # Директория для загруженных видео
+      - /your/path/to/static:/app/static/
+      # Директория, где хранится БД
+      - ./db:/app/db
