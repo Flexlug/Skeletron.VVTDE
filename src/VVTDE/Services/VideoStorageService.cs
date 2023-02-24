@@ -21,13 +21,6 @@ public class VideoStorageService : IVideoStorageService
 
     public async Task<Video> AddVideo(Video video)
     {
-        Video existsVideo = await _context.Videos.FirstOrDefaultAsync(v => v.Url == video.Url);
-        if (existsVideo is not null)
-        {
-            _logger.LogInformation($"Requested video already exists. Guid: {video.Guid}");
-            return existsVideo;
-        }
-
         await _context.Videos.AddAsync(video);
         await _context.SaveChangesAsync();
         
