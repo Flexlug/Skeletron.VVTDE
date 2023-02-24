@@ -52,6 +52,7 @@ public class VideoDownloadService : IVideoDownloadService
 
     private async Task DownloadWorker(Video video)
     {
+        _logger.LogWarning($"Starting video download. Guid: {video.Guid}");
         _downloadQueue.TryAdd(video.Guid, video.Guid);
         var output = await ProcessX.StartAsync($"{_ytDlpPath} --quiet --no-simulate --no-warnings --print filename {video.Url} -P {_downloadPath} -o \"{video.Guid}.mp4\"")
             .ToTask();
