@@ -35,6 +35,9 @@ public class VideoStorageService : IVideoStorageService
     public Video GetVideo(Guid guid)
         => _context.Videos.FirstOrDefault(v => v.Guid == guid);
 
+    public List<Video> GetAllVideos()
+        => _context.Videos.Select(x => x)?.ToList() ?? new List<Video>(); 
+    
     public Guid CheckVideoExists(string url)
     {
         var video = _context.Videos.FirstOrDefault(v => v.Url == url);

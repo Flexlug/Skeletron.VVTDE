@@ -50,6 +50,20 @@ namespace VVTDE.Controllers
             return View(video);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AllVideos()
+        {
+            if (!validateRequest(Request))
+            {
+                // Can not return Forbid() because this method requires authentication configured
+                return StatusCode(403);
+            }
+
+            var videos = _storage.GetAllVideos();
+
+            return Json(videos);
+        }
+        
         [HttpPost]
         public async Task<IActionResult> RequestDownload([FromBody] VideoRequest request)
         {
