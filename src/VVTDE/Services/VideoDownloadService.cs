@@ -50,6 +50,16 @@ public class VideoDownloadService : IVideoDownloadService
         Task.Factory.StartNew(async () => DownloadWorker(video));
     }
 
+    public bool TryGetVideoPath(Guid guid, out string path)
+    {
+        path = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            _downloadPath,
+            $"{guid}.mp4");
+
+        return File.Exists(path);
+    }
+
     private async Task DownloadWorker(Video video)
     {
         _logger.LogWarning($"Starting video download. Guid: {video.Guid}");

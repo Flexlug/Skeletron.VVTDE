@@ -26,6 +26,6 @@ using (var scope = app.Services.CreateScope())
 // устанавливаем сопоставление маршрутов с контроллерами
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Video}/{action=Watch}/{id?}");
+    pattern: "{controller=Video}/{action=Video}/{id?}");
 
 app.Run();

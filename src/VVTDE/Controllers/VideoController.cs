@@ -31,7 +31,7 @@ namespace VVTDE.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Watch(Guid guid)
+        public async Task<IActionResult> Video(Guid guid)
         {
             if (guid == Guid.Empty)
             {
@@ -48,6 +48,18 @@ namespace VVTDE.Controllers
             
             _logger.LogInformation($"Requested video found. Guid: {video.Guid}");
             return View(video);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Watch(Guid guid)
+        {
+            if (!_downloader.TryGetVideoPath(guid, out var path))
+            {
+                return NotFound();
+            }
+
+            Stream stream = System.IO.File.OpenRead(path);
+            return new FileStreamResult(stream, "application/octet-stream");
         }
 
         [HttpGet]
